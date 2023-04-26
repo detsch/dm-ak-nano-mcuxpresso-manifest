@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: miloszwasilewski/mcu_lava:latest
+    env:
+      ARMGCC_DIR: "/usr/"
+      AKNANO_BOARD_MODEL: "rt1170"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: ./
+
+      - name: Build
+        working-directory: ./
+        run: |
+          west init -l .
+          west update
+          ln -sfn dm-ak-nano-mcuxpresso-manifest ../poc
+          cd ../foundriesio/dm-ak-nano-mcuxpresso/armgcc
+          ./build_flexspi_nor_release.sh
+#      - name: Show directories
+#        working-directory: ./
+#        run: |
+#          ls -la && \
+#          pwd
+#
+#      - name: Build firmware
+#        working-directory: ../foundriesio/dm-ak-nano-mcuxpresso/armgcc
+#        run: |
+#          pwd && \
+#          ls -l && \
+#          ./build_flexspi_nor_release.sh
